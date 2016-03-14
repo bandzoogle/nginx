@@ -66,6 +66,9 @@ node.run_state['nginx_force_recompile'] = true
 node.run_state['nginx_configure_flags'] =
   node['nginx']['source']['default_configure_flags'] | node['nginx']['configure_flags']
 
+puts node.run_state['nginx_configure_flags'].inspect
+puts "================================================================="
+
 include_recipe 'nginx::commons_conf'
 
 cookbook_file "#{node['nginx']['dir']}/mime.types" do
