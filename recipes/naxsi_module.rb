@@ -29,7 +29,7 @@ end
 
 naxsi_src_filename = ::File.basename(node['nginx']['naxsi']['url'])
 naxsi_src_filepath = "#{Chef::Config['file_cache_path']}/#{naxsi_src_filename}"
-naxsi_extract_path = "#{Chef::Config['file_cache_path']}/nginx-naxsi-#{node['nginx']['naxsi']['version']}"
+naxsi_extract_path = "#{Chef::Config['file_cache_path']}/naxsi-#{node['nginx']['naxsi']['version']}"
 
 remote_file naxsi_src_filepath do
   source   node['nginx']['naxsi']['url']
@@ -49,4 +49,4 @@ bash 'extract_naxsi_module' do
 end
 
 node.run_state['nginx_configure_flags'] =
-  node.run_state['nginx_configure_flags'] | ["--add-module=#{naxsi_extract_path}/naxsi-core-#{node['nginx']['naxsi']['version']}/naxsi_src"]
+  node.run_state['nginx_configure_flags'] | ["--add-module=#{naxsi_extract_path}/naxsi-#{node['nginx']['naxsi']['version']}/naxsi_src"]
