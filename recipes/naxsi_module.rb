@@ -1,10 +1,10 @@
 #
-# Cookbook Name:: nginx
+# Cookbook:: nginx
 # Recipe:: naxsi_module
 #
 # Author:: Artiom Lunev (<artiom.lunev@gmail.com>)
 #
-# Copyright 2012-2013, Artiom Lunev
+# Copyright:: 2012-2017, Artiom Lunev
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,10 +21,7 @@
 
 cookbook_file "#{node['nginx']['dir']}/naxsi_core.rules" do
   source 'naxsi_core.rules'
-  owner  'root'
-  group  node['root_group']
-  mode   '0644'
-  notifies :reload, 'service[nginx]'
+  notifies :reload, 'service[nginx]', :delayed
 end
 
 naxsi_src_filename = ::File.basename(node['nginx']['naxsi']['url'])
@@ -34,9 +31,6 @@ naxsi_extract_path = "#{Chef::Config['file_cache_path']}/naxsi-#{node['nginx']['
 remote_file naxsi_src_filepath do
   source   node['nginx']['naxsi']['url']
   checksum node['nginx']['naxsi']['checksum']
-  owner    'root'
-  group    node['root_group']
-  mode     '0644'
 end
 
 bash 'extract_naxsi_module' do
@@ -45,7 +39,7 @@ bash 'extract_naxsi_module' do
     mkdir -p #{naxsi_extract_path}
     tar xzf #{naxsi_src_filename} -C #{naxsi_extract_path}
   EOH
-  not_if { ::File.exists?(naxsi_extract_path) }
+  not_if { ::File.exist?(naxsi_extract_path) }
 end
 
 node.run_state['nginx_configure_flags'] =

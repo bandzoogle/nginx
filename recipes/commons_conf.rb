@@ -1,10 +1,10 @@
 #
-# Cookbook Name:: nginx
+# Cookbook:: nginx
 # Recipe:: common/conf
 #
 # Author:: AJ Christensen <aj@junglist.gen.nz>
 #
-# Copyright 2008-2013, Opscode, Inc.
+# Copyright:: 2008-2017, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,21 +21,17 @@
 
 template 'nginx.conf' do
   path   "#{node['nginx']['dir']}/nginx.conf"
-  source 'nginx.conf.erb'
-  owner  'root'
-  group  node['root_group']
-  mode   '0644'
-  notifies :reload, 'service[nginx]'
+  source node['nginx']['conf_template']
+  cookbook node['nginx']['conf_cookbook']
+  notifies :reload, 'service[nginx]', :delayed
+  variables(lazy { { pid_file: pidfile_location } })
 end
 
 template "#{node['nginx']['dir']}/sites-available/default" do
   source 'default-site.erb'
-  owner  'root'
-  group  node['root_group']
-  mode   '0644'
-  notifies :reload, 'service[nginx]'
+  notifies :reload, 'service[nginx]', :delayed
 end
 
 nginx_site 'default' do
-  enable node['nginx']['default_site_enabled']
+  action node['nginx']['default_site_enabled'] ? :enable : :disable
 end

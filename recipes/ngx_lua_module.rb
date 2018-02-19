@@ -1,10 +1,10 @@
 #
-# Cookbook Name:: nginx
-# Recipes:: lua
+# Cookbook:: nginx
+# Recipes:: nginx_lua_module
 #
 # Author:: Arthur Freyman (<afreyman@riotgames.com>)
 #
-# Copyright 2013, Riot Games
+# Copyright:: 2013-2017, Riot Games
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,9 +26,6 @@ lua_extract_path = "#{Chef::Config['file_cache_path']}/nginx-lua-#{node['nginx']
 remote_file lua_src_filepath do
   source   node['nginx']['lua']['url']
   checksum node['nginx']['lua']['checksum']
-  owner    'root'
-  group    node['root_group']
-  mode     '0644'
 end
 
 bash 'extract_lua_module' do
@@ -37,7 +34,7 @@ bash 'extract_lua_module' do
     mkdir -p #{lua_extract_path}
     tar xzf #{lua_src_filename} -C #{lua_extract_path}
   EOH
-  not_if { ::File.exists?(lua_extract_path) }
+  not_if { ::File.exist?(lua_extract_path) }
 end
 
 node.run_state['nginx_configure_flags'] =
